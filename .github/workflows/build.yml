@@ -1,0 +1,106 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  go-build-test:
+    name: Go build + test (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+
+      - name: go mod tidy (fetches gVisor etc.)
+        run: |
+          go get gvisor.dev/gvisor@v0.0.0-20260413194555-9680d69bf798
+          go mod tidy
+
+      # On Linux (unlike Windows), pkg/rawfile's build constraints are
+      # satisfied, so the full module -- including android/vpntun and
+      # android/gomobilebridge -- builds in one shot here. This is
+      # exactly the class of error that was previously only catchable
+      # by a real gomobile bind on Windows; here it's caught for free
+      # on every push.
+      - name: go build ./...
+        run: go build ./...
+
+      - name: go vet ./...
+        run: go vet ./...
+
+      - name: go test ./... -v
+        run: go test ./... -v
+
+  android-build:
+    name: gomobile bind + Android APK
+    runs-on: ubuntu-latest
+    needs: go-build-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: sdkmanager --install "ndk;27.0.12077973"
+
+      - name: Install gomobile
+        run: |
+          go get -tool golang.org/x/mobile/cmd/gobind
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          gomobile init
+
+      - name: go mod tidy (fetches gVisor etc.)
+        run: |
+          go get gvisor.dev/gvisor@v0.0.0-20260413194555-9680d69bf798
+          go mod tidy
+
+      - name: Build gomobilebridge.aar
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/27.0.12077973
+          GOSUMDB: "off"
+        run: |
+          gomobile bind -target=android -androidapi 26 -o gomobilebridge.aar ./android/gomobilebridge
+
+      - name: Copy .aar into Android project
+        run: |
+          mkdir -p android-app/app/libs
+          cp gomobilebridge.aar android-app/app/libs/gomobilebridge.aar
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x android-app/gradlew
+
+      - name: Build debug APK
+        working-directory: android-app
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: android-app/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload gomobilebridge.aar artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gomobilebridge-aar
+          path: gomobilebridge.aar
