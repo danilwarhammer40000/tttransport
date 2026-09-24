@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_root">#0A0E14</color>
+    <color name="bg_card">#141C26</color>
+    <color name="bg_card_alt">#101720</color>
+
+    <color name="accent">#6EC6FF</color>
+    <color name="accent_dim">#2B4A5E</color>
+    <color name="accent_ring">#1E3A4C</color>
+
+    <color name="text_primary">#E8F4FB</color>
+    <color name="text_secondary">#7A93A3</color>
+    <color name="text_muted">#4A6172</color>
+
+    <color name="danger">#FF8A80</color>
+</resources>

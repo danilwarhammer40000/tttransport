@@ -1,0 +1,40 @@
+# Go
+gomobilebridge.aar
+turboflare-server
+*.exe
+
+# Android
+android-app/.gradle/
+android-app/.idea/
+android-app/local.properties
+android-app/app/build/
+android-app/app/libs/*.aar
+android-app/build/
+android-app/*.iml
+android-app/app/*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+EOF
+cat /home/claude/gitignore_content.txt
+Output
+
+# Go
+gomobilebridge.aar
+turboflare-server
+*.exe
+
+# Android
+android-app/.gradle/
+android-app/.idea/
+android-app/local.properties
+android-app/app/build/
+android-app/app/libs/*.aar
+android-app/build/
+android-app/*.iml
+android-app/app/*.iml
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_root"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="Выберите приложения для туннеля (остальные используют прямое соединение)"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
+
+    <ListView
+        android:id="@+id/appListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:choiceMode="multipleChoice"
+        android:divider="@color/bg_card"
+        android:dividerHeight="1dp" />
+
+    <Button
+        android:id="@+id/btnSaveSelection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_pill_button"
+        android:text="Сохранить выбор"
+        android:textAllCaps="false"
+        android:textColor="@color/accent" />
+
+</LinearLayout>
